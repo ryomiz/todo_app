@@ -5,11 +5,13 @@ const todoEl = document.getElementById('todo');
 const submitEl = document.getElementById('submit');
 const alertEl = document.getElementById('alert');
 
-// タスクに関するelements
-const buttonComp = document.querySelectorAll('.completeButton');
-const buttonBack = document.querySelectorAll('.backButton');
-const buttonDel = document.querySelectorAll('.delButton');
+// タスクリストに関するelements
+const completedList = document.getElementById('completedTasks');
+const uncompletedList = document.getElementById('uncompletedTasks');
 
+// ここから
+// Todoが送信された際の処理
+//
 const clearInput = () => {
   todoEl.value = '';
 };
@@ -23,26 +25,88 @@ const returnInputValue = (e) => {
     alertEl.classList.add('active');
     return;
   }
-  console.log(todo);
   clearInput();
+  return todo;
 };
 
-submitEl.addEventListener('click', returnInputValue);
+// todo: string
+const createTodo = (todo) => {
+  const list = `
+  <li>
+    <p>${todo}</p>
+    <div class="buttons">
+      <button class="completeButton">完了</button>
+    </div>
+  </li>
+  `;
+  uncompletedList.insertAdjacentHTML('beforeend', list);
+};
 
-buttonComp.forEach((el) => {
-  el.addEventListener('click', () => {
-    console.log('Complete');
-  });
+submitEl.addEventListener('click', (e) => {
+  const todo = returnInputValue(e);
+  createTodo(todo);
+  addCompleteEventListener();
 });
+//
+//
+// ここまで
 
-buttonBack.forEach((el) => {
-  el.addEventListener('click', () => {
-    console.log('Back');
+// Add EventListener
+const addCompleteEventListener = () => {
+  const buttonComp = document.querySelectorAll('.completeButton');
+  buttonComp.forEach((el) => {
+    el.addEventListener('click', handleCompleteTask);
   });
-});
+};
 
-buttonDel.forEach((el) => {
-  el.addEventListener('click', () => {
-    console.log('Delete');
+const addBackEventListener = () => {
+  const buttonBack = document.querySelectorAll('.backButton');
+  buttonBack.forEach((el) => {
+    el.addEventListener('click', handleUncompleteTask);
   });
-});
+};
+
+const addDeleteEventListener = () => {
+  const buttonDel = document.querySelectorAll('.delButton');
+  buttonDel.forEach((el) => {
+    el.addEventListener('click', handleDeleteTask);
+  });
+};
+
+// Button Elements
+const compButton = `
+<div class="buttons">
+  <button class="completeButton">完了</button>
+</div>`;
+
+const delButtons = `  
+<div class="buttons">            
+  <button class="delButton">削除</button>
+  <button class="backButton">戻す</button>
+</div>`;
+
+const handleCompleteTask = (e) => {
+  const parentLi = e.target.parentNode.parentNode;
+  e.target.parentNode.remove();
+  parentLi.insertAdjacentHTML('beforeEnd', delButtons);
+  completedList.appendChild(parentLi);
+  addBackEventListener();
+  addDeleteEventListener();
+};
+
+const handleUncompleteTask = (e) => {
+  const parentLi = e.target.parentNode.parentNode;
+  e.target.parentNode.remove();
+  parentLi.insertAdjacentHTML('beforeEnd', compButton);
+  uncompletedList.appendChild(parentLi);
+  addCompleteEventListener();
+};
+
+const handleDeleteTask = (e) => {
+  const parentLi = e.target.parentNode.parentNode;
+  parentLi.remove();
+};
+
+addCompleteEventListener();
+addBackEventListener();
+addDeleteEventListener();

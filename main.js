@@ -12,13 +12,11 @@ const uncompletedList = document.getElementById('uncompletedTasks');
 // ここから
 // Todoが送信された際の処理
 //
-const clearInput = () => {
-  todoEl.value = '';
-};
+const clearInput = () => (todoEl.value = '');
 
 const returnInputValue = (e) => {
-  alertEl.classList.remove('active');
   e.preventDefault();
+  alertEl.classList.remove('active');
   const todo = todoEl.value;
   // todoが空白の際にエラーメッセージ
   if (!todo) {
@@ -28,7 +26,6 @@ const returnInputValue = (e) => {
   clearInput();
   return todo;
 };
-
 // todo: string
 const createTodo = (todo) => {
   const list = `
@@ -51,7 +48,41 @@ submitEl.addEventListener('click', (e) => {
 //
 // ここまで
 
-// Add EventListener
+// ボタンに関するelements
+const compButton = `
+<div class="buttons">
+  <button class="completeButton">完了</button>
+</div>`;
+
+const delButtons = `  
+<div class="buttons">            
+  <button class="delButton">削除</button>
+  <button class="backButton">戻す</button>
+</div>`;
+
+const handleCompleteTask = (e) => {
+  const parentLi = e.target.parentNode.parentNode; // クリックされた対象の親要素li要素を取得
+  e.target.parentNode.remove(); // 完了ボタンを含むdiv要素を削除
+  parentLi.insertAdjacentHTML('beforeEnd', delButtons); // 削除、戻すボタンを含むdiv要素を追加
+  completedList.appendChild(parentLi); // タスクを完了したタスクへ追加
+  addBackEventListener();
+  addDeleteEventListener();
+};
+
+const handleUncompleteTask = (e) => {
+  const parentLi = e.target.parentNode.parentNode; // クリックされた対象の親要素li要素を取得
+  e.target.parentNode.remove(); // 削除、戻すボタンを含むdiv要素を削除
+  parentLi.insertAdjacentHTML('beforeEnd', compButton); // 完了ボタンを含むdiv要素を追加
+  uncompletedList.appendChild(parentLi); // タスクを未完了のタスクへ追加
+  addCompleteEventListener();
+};
+
+const handleDeleteTask = (e) => {
+  const parentLi = e.target.parentNode.parentNode; // クリックされた対象の親要素li要素を取得
+  parentLi.remove();
+};
+
+// EventListenerを付与する関数
 const addCompleteEventListener = () => {
   const buttonComp = document.querySelectorAll('.completeButton');
   buttonComp.forEach((el) => {
@@ -73,40 +104,7 @@ const addDeleteEventListener = () => {
   });
 };
 
-// Button Elements
-const compButton = `
-<div class="buttons">
-  <button class="completeButton">完了</button>
-</div>`;
-
-const delButtons = `  
-<div class="buttons">            
-  <button class="delButton">削除</button>
-  <button class="backButton">戻す</button>
-</div>`;
-
-const handleCompleteTask = (e) => {
-  const parentLi = e.target.parentNode.parentNode;
-  e.target.parentNode.remove();
-  parentLi.insertAdjacentHTML('beforeEnd', delButtons);
-  completedList.appendChild(parentLi);
-  addBackEventListener();
-  addDeleteEventListener();
-};
-
-const handleUncompleteTask = (e) => {
-  const parentLi = e.target.parentNode.parentNode;
-  e.target.parentNode.remove();
-  parentLi.insertAdjacentHTML('beforeEnd', compButton);
-  uncompletedList.appendChild(parentLi);
-  addCompleteEventListener();
-};
-
-const handleDeleteTask = (e) => {
-  const parentLi = e.target.parentNode.parentNode;
-  parentLi.remove();
-};
-
+// 初期化
 addCompleteEventListener();
 addBackEventListener();
 addDeleteEventListener();
